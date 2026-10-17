@@ -1,0 +1,6 @@
+- name: Базовая настройка и 3x-ui на выходах
+  hosts: exits
+  become: true
+  roles: 
+  - base
+  - xui

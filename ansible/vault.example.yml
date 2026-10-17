@@ -1,0 +1,6 @@
+# Локально: скопировать в group_vars/all/vault.yml и зашифровать (ansible-vault encrypt).
+# GitHub Actions: это же содержимое — в секрет SECRET_VARS.
+# Значения: openssl rand -hex 8 / -hex 16 / -hex 9
+vault_xui_username: "..."
+vault_xui_password: "..."
+vault_xui_web_base_path: "..."

@@ -1,0 +1,3 @@
+xui_username: "{{ vault_xui_username }}"
+xui_password: "{{ vault_xui_password }}"
+xui_web_base_path: "{{ vault_xui_web_base_path }}"

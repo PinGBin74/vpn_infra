@@ -1,0 +1,4 @@
+xui_install_url: https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh
+xui_port: 2053         
+xui_backup_dir: /var/backups/x-ui
+xui_backup_keep_days: 60
