@@ -1,0 +1,6 @@
+base_packages:
+  - ufw
+  - unattended-upgrades
+ufw_allowed_tcp_ports:
+  - "22"
+  - "443"

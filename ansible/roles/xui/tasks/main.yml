@@ -1,0 +1,44 @@
+- name: Пакеты для установки и бэкапа
+  ansible.builtin.apt:
+    name: [curl, sqlite3]
+    state: present
+
+- name: Скачать установщик
+  ansible.builtin.get_url:
+    url: "{{ xui_install_url }}"
+    dest: /root/3x-ui-install.sh
+    mode: "0700"
+
+- name: Установка 3х-ui( если не установлен)
+  ansible.builtin.command: /root/3x-ui-install.sh
+  args:
+    creates: /usr/local/x-ui/x-ui
+  register: xui_install
+
+- name: Логин, пароль, порт, путь панели
+
+  ansible.builtin.command: >
+    /usr/local/x-ui/x-ui setting
+    -username {{ xui_username }}
+    -password {{ xui_password }}
+    -port {{ xui_port }}
+    -webBasePath {{ xui_web_base_path }}
+  when: xui_install.changed
+  no_log: true 
+  notify: restart x-ui
+
+- name: Каталог бэкапов
+  ansible.builtin.file:
+    path: "{{ xui_backup_dir }}"
+    state: directory
+    mode: "0700"
+
+- name: Ежедневный бэкап базы — пользователи живут в ней
+  ansible.builtin.cron:
+    name: x-ui db backup
+    day: "1,15"
+    hour: "4"
+    minute: "0"
+    job: >-
+      sqlite3 /etc/x-ui/x-ui.db ".backup '{{ xui_backup_dir }}/x-ui-$(date +\%F).db'"
+      && find {{ xui_backup_dir }} -name 'x-ui-*.db' -mtime +{{ xui_backup_keep_days }} -delete
