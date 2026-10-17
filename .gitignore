@@ -1,0 +1,8 @@
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+ansible/backups/
+*.retry
+ansible/inventory.ini
+ansible/group_vars/all/vault.yml
+ansible/host_vars/
