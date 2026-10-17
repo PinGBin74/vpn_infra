@@ -1,0 +1,38 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ansible:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ansible
+        run: pipx install --include-deps ansible
+
+      - name: Ключ SSH, inventory и переменные из секретов
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+          INVENTORY: ${{ secrets.INVENTORY }}
+          SECRET_VARS: ${{ secrets.SECRET_VARS }}
+          BECOME_PASSWORD: ${{ secrets.BECOME_PASSWORD }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\n' "$INVENTORY" > inventory.ini
+          printf '%s\n' "$SECRET_VARS" > "$RUNNER_TEMP/secret_vars.yml"
+          printf '%s' "$BECOME_PASSWORD" > "$RUNNER_TEMP/become_pass"
+          chmod 600 ~/.ssh/id_ed25519 "$RUNNER_TEMP/secret_vars.yml" "$RUNNER_TEMP/become_pass"
+
+      - name: Playbook
+        run: >
+          ansible-playbook site.yml
+          -e @"$RUNNER_TEMP/secret_vars.yml"
+          --become-password-file "$RUNNER_TEMP/become_pass"
