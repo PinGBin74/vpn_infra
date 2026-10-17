@@ -4,3 +4,5 @@ base_packages:
 ufw_allowed_tcp_ports:
   - "22"
   - "443"
+  - "2053"
+  - "80"
